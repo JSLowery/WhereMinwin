@@ -159,7 +159,8 @@ function whereGrabber(name,line,wildcards)
     -- print ("whereGrabber")
     -- print(wildcards[1])
     -- print(wildcards[2])
-    if wildcards[1] == "you" or wildcards[1] == "You" then return end
+    wild1 = string.lower(wildcards[1])
+    if wild1 == "you"  or wild1=="your"  or wild1=="the" then return end
     whereTable[count] = {wildcards[1], wildcards[2]}
     DoAfterSpecial(.1 ,'stopGrabbing()', 12)
     count = count +1
@@ -264,10 +265,11 @@ function show_whwin ()
   whwin:tabbroadcast(true, {style})
 
 end 
+local runningFlag= 3
 local curZone
 local lastZone
 function OnPluginBroadcast (msg, id, name, text)
-  local runningFlag= 3
+  
     if (text== "char.status") then
       res, gmcparg = CallPlugin("3e7dedbe37e44942dd46d264","gmcpval","char.status")
         luastmt = "gmcpdata = " .. gmcparg
