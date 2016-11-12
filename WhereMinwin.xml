@@ -159,6 +159,7 @@ function whereGrabber(name,line,wildcards)
     -- print ("whereGrabber")
     -- print(wildcards[1])
     -- print(wildcards[2])
+    if wildcards[1] == "you" or wildcards[1] == "You" then return end
     whereTable[count] = {wildcards[1], wildcards[2]}
     DoAfterSpecial(.1 ,'stopGrabbing()', 12)
     count = count +1
@@ -173,6 +174,7 @@ function stopGrabbing(name,line,wildcards)
     EnableTrigger("CurAreaminwin", 0)
     EnableTriggerGroup("gag_where", 0)
     show_whwin()
+    stall = false
 end
 function whereStarter()
   -- print ("whereStarter")
@@ -183,7 +185,7 @@ function startTheScript()
   -- print("sending where")
   whereTable = {}
   count = 1
-
+  stall = true
   do_Execute_no_echo('where')
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
@@ -200,7 +202,6 @@ dofile (GetPluginInfo (GetPluginID (), 20) .. "luapath.lua")
 require 'var'
 require "commas"
 require 'miniwin'
-require 'tprint'
 require 'pluginhelper'
 require 'ldplugin'
 require 'aardutils'
