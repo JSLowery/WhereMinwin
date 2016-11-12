@@ -127,7 +127,7 @@
 <!--  Timers  -->
 
 <timers>
-  <timer name="bobtest" enabled="y" minute="0" second="15.00" offset_second="0.00"    send_to="12"
+  <timer name="whtime" enabled="y" minute="0" second="15.00" offset_second="0.00"    send_to="12"
 >
   <send>Execute('where1')</send>
 
@@ -176,6 +176,7 @@ function stopGrabbing(name,line,wildcards)
     EnableTrigger("CurAreaminwin", 0)
     EnableTriggerGroup("gag_where", 0)
     show_whwin()
+    ResetTimer("whtime")
     stall = false
 end
 function whereStarter()
@@ -183,8 +184,9 @@ function whereStarter()
   EnableTrigger("DoSomething", 1)
 end
 function startTheScript()
+  print ("before the return")
   if stall then return end
-  -- print("sending where")
+  print("sending where")
   whereTable = {}
   count = 1
   stall = true
@@ -199,7 +201,7 @@ function do_Execute_no_echo(command)
   Execute(command)
   SetOption("display_my_input", original_echo_setting)
 end
-
+dofile (GetPluginInfo (GetPluginID (), 20) .. "luapath.lua")
 
 require 'var'
 require "commas"
@@ -275,12 +277,12 @@ function OnPluginBroadcast (msg, id, name, text)
       res, gmcparg = CallPlugin("3e7dedbe37e44942dd46d264","gmcpval","char.status")
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
-        runningFlag = gmcpdata.state
+        runningFlag = tonumber(gmcpdata.state)
         if runningFlag ~= 3 then 
-          --print (runningFlag)
+          print (runningFlag.. " set to true")
           stall = true 
         else
-         -- print (runningFlag)
+         print (runningFlag.. " set to false")
           stall = false
         end
     end
