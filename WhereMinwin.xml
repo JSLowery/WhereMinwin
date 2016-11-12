@@ -96,7 +96,7 @@
    script="stallScript"
    name="begrun"
   >
-  <send> print("test")</send>
+  
   </trigger>
   <trigger
    match="{end running}"
@@ -107,7 +107,7 @@
    script="allowScript"
    name="endrun"
   >
-  <send> print("test2")</send>
+  
   </trigger>
 </triggers>
 <!--  Aliases  -->
@@ -180,7 +180,7 @@ function whereStarter()
 end
 function startTheScript()
   if stall then return end
-   print("sending where")
+  -- print("sending where")
   whereTable = {}
   count = 1
 
@@ -282,8 +282,8 @@ function OnPluginBroadcast (msg, id, name, text)
         if runningFlag ~= 3 or stall then return end
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
-          print (lastZone)
-          print (curArea)
+         -- print (lastZone)
+         -- print (curArea)
           lastZone = curZone
           do_Execute_no_echo("where1")
         end
