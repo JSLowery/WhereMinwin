@@ -199,7 +199,7 @@ function do_Execute_no_echo(command)
   Execute(command)
   SetOption("display_my_input", original_echo_setting)
 end
-dofile (GetPluginInfo (GetPluginID (), 20) .. "luapath.lua")
+
 
 require 'var'
 require "commas"
