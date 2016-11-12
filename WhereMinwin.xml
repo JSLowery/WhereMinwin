@@ -57,7 +57,7 @@
   >
   </trigger>
   <trigger
-   match="^(?P<mob>[a-zA-Z]{3,30}) +(?P<room>.+)$"
+   match="^(?P<mob>[a-zA-Z]{3,12})\s{19,29}(?P<room>.+)$"
    
    name="DoSomething"
    regexp="y"
@@ -127,7 +127,7 @@
 <!--  Timers  -->
 
 <timers>
-  <timer name="bobtest" enabled="y" minute="0" second="30.00" offset_second="0.00"    send_to="12"
+  <timer name="bobtest" enabled="y" minute="0" second="15.00" offset_second="0.00"    send_to="12"
 >
   <send>Execute('where1')</send>
 
@@ -161,6 +161,7 @@ function whereGrabber(name,line,wildcards)
     -- print(wildcards[2])
     wild1 = string.lower(wildcards[1])
     if wild1 == "you"  or wild1=="your"  or wild1=="the" then return end
+    if #wildcards[2] > 30 then return end
     whereTable[count] = {wildcards[1], wildcards[2]}
     DoAfterSpecial(.1 ,'stopGrabbing()', 12)
     count = count +1
@@ -240,7 +241,7 @@ function show_whwin ()
   for i, v in ipairs (whereTable) do
     style = {}
 
-      style.text = string.format("%-30s   %s", v[1],   v[2])
+      style.text = string.format("%-12s   %s", v[1],   v[2])
  
       style.textcolour = "time_colour"
     if v[2] == "???" then
@@ -275,6 +276,13 @@ function OnPluginBroadcast (msg, id, name, text)
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
         runningFlag = gmcpdata.state
+        if runningFlag ~= 3 then 
+          --print (runningFlag)
+          stall = true 
+        else
+         -- print (runningFlag)
+          stall = false
+        end
     end
 
     if (text == "room.info") then
@@ -282,7 +290,7 @@ function OnPluginBroadcast (msg, id, name, text)
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
         curZone = gmcpdata.zone
-        if runningFlag ~= 3 or stall then return end
+        --if runningFlag ~= 3 or stall then return end
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
          -- print (lastZone)
