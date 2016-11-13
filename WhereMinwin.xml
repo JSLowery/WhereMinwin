@@ -147,23 +147,15 @@ local curArea= ""
 local stall = false
 function stallScript()
   stall = true
-  -- print (tostring(stall))
-  ResetTimer("whtime")
 end
 function allowScript()
   stall = false
-  -- print("In allowscript")
-  -- print (tostring(stall))
  do_Execute_no_echo('where1')
-  ResetTimer("whtime")
 end
 function CurAreaminwin(name, line, wildcards)
   curArea = wildcards[1]
 end
 function whereGrabber(name,line,wildcards)
-    -- print ("whereGrabber")
-    -- print(wildcards[1])
-    -- print(wildcards[2])
     wild1 = string.lower(wildcards[1])
     if wild1 == "you"  or wild1=="your"  or wild1=="the" then return end
     if #wildcards[2] > 30 then return end
@@ -172,32 +164,22 @@ function whereGrabber(name,line,wildcards)
     count = count +1
 end
 function stopGrabbing(name,line,wildcards)
-  -- print ("stopGrabbing")
-    --print(wildcards[1])
-    --tprint (whereTable)
     EnableTrigger("DoSomething", 0)
     EnableTrigger("KillSomething", 0)
     EnableTrigger("whereStarter", 0)
     EnableTrigger("CurAreaminwin", 0)
     EnableTriggerGroup("gag_where", 0)
     show_whwin()
-    ResetTimer("whtime")
     stall = false
-
-    -- print (tostring(stall))
 end
 function whereStarter()
-  -- print ("whereStarter")
   EnableTrigger("DoSomething", 1)
 end
 function startTheScript()
-  -- print ("before the return")
   if stall then return end
-  -- print("sending where")
   whereTable = {}
   count = 1
   stall = true
-  -- print (tostring(stall))
   do_Execute_no_echo('where')
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
@@ -247,7 +229,7 @@ function show_whwin ()
   style.text = string.format("Area: %s", curArea)
   table.insert (header, {style})
 
-  -- list of mobs
+
   for i, v in ipairs (whereTable) do
     style = {}
 
@@ -258,7 +240,7 @@ function show_whwin ()
       style.textcolour = "mobdead_colour"
     end
     table.insert (texttable, {style})
-  --   --tprint (texttable)
+
   end -- for
 
  
@@ -269,7 +251,7 @@ function show_whwin ()
     whwin:show(true)
    
   
-  --whwin:changetotab('default')
+  whwin:changetotab('default')
 
   style = {}
   style.text = " Area: " .. curArea
@@ -287,15 +269,9 @@ function OnPluginBroadcast (msg, id, name, text)
         assert (loadstring (luastmt or "")) ()
         runningFlag = tonumber(gmcpdata.state)
         if runningFlag ~= 3 then 
-          -- print (runningFlag.. " set to true")
           stall = true 
-          -- print (tostring(stall))
         else
-         -- print (runningFlag.. " set to false")
           stall = false
-          -- print (" in runningFlag")
-          -- print (tostring(stall))
-          Execute('where1')
         end
     end
 
@@ -304,14 +280,11 @@ function OnPluginBroadcast (msg, id, name, text)
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
         curZone = gmcpdata.zone
-        --if runningFlag ~= 3 or stall then return end
+        if runningFlag ~= 3 or stall then return end
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
-         -- print (lastZone)
-         -- print (curArea)
           lastZone = curZone
           do_Execute_no_echo("where1")
-          -- print("from area change")
         end
 
     end
