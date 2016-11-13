@@ -147,10 +147,15 @@ local curArea= ""
 local stall = false
 function stallScript()
   stall = true
+  -- print (tostring(stall))
+  ResetTimer("whtime")
 end
 function allowScript()
   stall = false
-  do_Execute_no_echo('where1')
+  -- print("In allowscript")
+  -- print (tostring(stall))
+ do_Execute_no_echo('where1')
+  ResetTimer("whtime")
 end
 function CurAreaminwin(name, line, wildcards)
   curArea = wildcards[1]
@@ -178,18 +183,21 @@ function stopGrabbing(name,line,wildcards)
     show_whwin()
     ResetTimer("whtime")
     stall = false
+
+    -- print (tostring(stall))
 end
 function whereStarter()
   -- print ("whereStarter")
   EnableTrigger("DoSomething", 1)
 end
 function startTheScript()
-  print ("before the return")
+  -- print ("before the return")
   if stall then return end
-  print("sending where")
+  -- print("sending where")
   whereTable = {}
   count = 1
   stall = true
+  -- print (tostring(stall))
   do_Execute_no_echo('where')
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
@@ -279,11 +287,15 @@ function OnPluginBroadcast (msg, id, name, text)
         assert (loadstring (luastmt or "")) ()
         runningFlag = tonumber(gmcpdata.state)
         if runningFlag ~= 3 then 
-          print (runningFlag.. " set to true")
+          -- print (runningFlag.. " set to true")
           stall = true 
+          -- print (tostring(stall))
         else
-         print (runningFlag.. " set to false")
+         -- print (runningFlag.. " set to false")
           stall = false
+          -- print (" in runningFlag")
+          -- print (tostring(stall))
+          Execute('where1')
         end
     end
 
@@ -299,6 +311,7 @@ function OnPluginBroadcast (msg, id, name, text)
          -- print (curArea)
           lastZone = curZone
           do_Execute_no_echo("where1")
+          -- print("from area change")
         end
 
     end
