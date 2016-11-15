@@ -129,7 +129,9 @@
 <timers>
   <timer name="whtime" enabled="y" minute="0" second="15.00" offset_second="0.00"    send_to="12"
 >
-  <send>Execute('where1')</send>
+  <send>
+  sendWhere1()
+   -- Note("timer ")</send>
 
   </timer>
 </timers>
@@ -145,12 +147,33 @@ whereTable = {}
 count = 1
 local curArea= ""
 local stall = false
+function sendWhere1()
+local iStatus
+local almatch
+local alresponse
+local alflags
+local alscriptname
+
+
+iStatus, almatch, alresponse, alflags, alscriptname  = GetAlias ("where1")
+-- Note(alflags)
+  if alflags >0 then 
+  do_Execute_no_echo('where1')
+end
+end
 function stallScript()
   stall = true
 end
 function allowScript()
+  --DoAfterSpecial(1,'setStallF()', 12)
+  setStallF()
+  -- Note("allow script")
+  ResetTimer("whtime")
+ sendWhere1()
+ EnableAlias("where1", 0)
+end
+function setStallF()
   stall = false
- do_Execute_no_echo('where1')
 end
 function CurAreaminwin(name, line, wildcards)
   curArea = wildcards[1]
@@ -171,6 +194,7 @@ function stopGrabbing(name,line,wildcards)
     EnableTriggerGroup("gag_where", 0)
     show_whwin()
     stall = false
+    EnableAlias("where1", 1)
 end
 function whereStarter()
   EnableTrigger("DoSomething", 1)
@@ -284,7 +308,9 @@ function OnPluginBroadcast (msg, id, name, text)
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
           lastZone = curZone
-          do_Execute_no_echo("where1")
+          -- Note("OPB room.info")
+          sendWhere1()
+          EnableAlias("where1", 0)
         end
 
     end
