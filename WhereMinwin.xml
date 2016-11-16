@@ -131,7 +131,8 @@
 >
   <send>
   sendWhere1()
-   Note("timer ")</send>
+   -- Note("timer ")
+   </send>
 
   </timer>
 </timers>
@@ -156,7 +157,7 @@ function sendWhere1()
 
 
   iStatus, almatch, alresponse, alflags, alscriptname  = GetAlias ("where1")
-  Note(alflags)
+  -- Note(alflags)
     if alflags ~=0 then 
       do_Execute_no_echo('where1')
       
@@ -168,7 +169,7 @@ end
 function allowScript()
   --DoAfterSpecial(1,'setStallF()', 12)
   setStallF()
-  Note("allow script")
+  -- Note("allow script")
   ResetTimer("whtime")
  sendWhere1()
 end
@@ -183,13 +184,13 @@ function whereGrabber(name,line,wildcards)
     wild1 = string.lower(wildcards[1])
     if wild1 == "you"  or wild1=="your"  or wild1=="the" then return end
     if #wildcards[2] > 30 then return end
-    print (wildcards[0])
+    -- print (wildcards[0])
     whereTable[count] = {wildcards[1], wildcards[2]}
     DoAfterSpecial(.1 ,'stopGrabbing()', 12)
     count = count +1
 end
 function stopGrabbing(name,line,wildcards)
-  Note("stopGrabbing")
+  -- Note("stopGrabbing")
     EnableTrigger("DoSomething", 0)
     EnableTrigger("KillSomething", 0)
     EnableTrigger("whereStarter", 0)
@@ -312,7 +313,7 @@ function OnPluginBroadcast (msg, id, name, text)
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
           lastZone = curZone
-          Note("OPB room.info")
+          -- Note("OPB room.info")
           sendWhere1()
           
         end
