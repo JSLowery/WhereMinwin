@@ -131,7 +131,7 @@
 >
   <send>
   sendWhere1()
-   -- Note("timer ")
+   DebugNote("timer ")
    </send>
 
   </timer>
@@ -148,6 +148,7 @@ whereTable = {}
 count = 1
 local curArea= ""
 local stall = false
+local Debug = false
 function sendWhere1()
   local iStatus
   local almatch
@@ -157,7 +158,7 @@ function sendWhere1()
 
 
   iStatus, almatch, alresponse, alflags, alscriptname  = GetAlias ("where1")
-  -- Note(alflags)
+  DebugNote(alflags)
     if alflags ~=0 then 
       do_Execute_no_echo('where1')
       
@@ -169,7 +170,7 @@ end
 function allowScript()
   --DoAfterSpecial(1,'setStallF()', 12)
   setStallF()
-  -- Note("allow script")
+  DebugNote("allow script")
   ResetTimer("whtime")
  sendWhere1()
 end
@@ -178,25 +179,40 @@ function setStallF()
 end
 function CurAreaminwin(name, line, wildcards)
   curArea = wildcards[1]
-  print (curArea)
+  DebugNote (curArea)
 end
 function whereGrabber(name,line,wildcards)
     wild1 = string.lower(wildcards[1])
-    if wild1 == "you"  or wild1=="your"  or wild1=="the" then return end
-    if #wildcards[2] > 30 then return end
-    -- print (wildcards[0])
+    DebugNote (wild1)
+    DebugNote(wildcards[2].." ".. #wildcards[2])
+    if wild1 == "you"  or wild1=="your"  or wild1=="the" or wild1 == "name" then killScript() return end
+    --if #wildcards[2] > 40 then killScript() return end
+    DebugNote (wildcards[0])
     whereTable[count] = {wildcards[1], wildcards[2]}
     DoAfterSpecial(.1 ,'stopGrabbing()', 12)
     count = count +1
 end
 function stopGrabbing(name,line,wildcards)
-  -- Note("stopGrabbing")
-    EnableTrigger("DoSomething", 0)
+  Note("stopGrabbing")
+    
+    show_whwin()
+    killScript()
+end
+function DebugNote( msg )
+  if not Debug then return end
+    if type(msg)== 'table' then
+      tprint(msg)
+    else
+      Note (msg)
+    end
+  
+end
+function killScript()
+EnableTrigger("DoSomething", 0)
     EnableTrigger("KillSomething", 0)
     EnableTrigger("whereStarter", 0)
     EnableTrigger("CurAreaminwin", 0)
     EnableTriggerGroup("gag_where", 0)
-    show_whwin()
     stall = false
     EnableAlias("where1", 1)
 end
@@ -204,7 +220,7 @@ function whereStarter()
   EnableTrigger("DoSomething", 1)
 end
 function startTheScript()
-  if stall then return end
+  if stall then DebugNote("reurtning becuase stall was true") return end
   whereTable = {}
   count = 1
   stall = true
@@ -258,7 +274,7 @@ function show_whwin ()
   style.text = string.format("Area: %s", curArea)
   table.insert (header, {style})
 
-
+DebugNote(whereTable)
   for i, v in ipairs (whereTable) do
     style = {}
 
@@ -313,7 +329,7 @@ function OnPluginBroadcast (msg, id, name, text)
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
           lastZone = curZone
-          -- Note("OPB room.info")
+          DebugNote("OPB room.info")
           sendWhere1()
           
         end
