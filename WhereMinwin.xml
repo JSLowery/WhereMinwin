@@ -57,7 +57,7 @@
   >
   </trigger>
   <trigger
-   match="^(?P<mob>[a-zA-Z]{3,12})\s{19,29}(?P<room>.+)$"
+   match="(?P<mob>[a-zA-Z]{3,12})\s{19,29}(?P<room>.+)"
    
    name="DoSomething"
    regexp="y"
@@ -131,7 +131,7 @@
 >
   <send>
   sendWhere1()
-   -- Note("timer ")</send>
+   Note("timer ")</send>
 
   </timer>
 </timers>
@@ -148,45 +148,48 @@ count = 1
 local curArea= ""
 local stall = false
 function sendWhere1()
-local iStatus
-local almatch
-local alresponse
-local alflags
-local alscriptname
+  local iStatus
+  local almatch
+  local alresponse
+  local alflags
+  local alscriptname
 
 
-iStatus, almatch, alresponse, alflags, alscriptname  = GetAlias ("where1")
--- Note(alflags)
-  if alflags >0 then 
-  do_Execute_no_echo('where1')
-end
-end
+  iStatus, almatch, alresponse, alflags, alscriptname  = GetAlias ("where1")
+  Note(alflags)
+    if alflags ~=0 then 
+      do_Execute_no_echo('where1')
+      
+    end
+  end
 function stallScript()
-  stall = true
+    stall = true
 end
 function allowScript()
   --DoAfterSpecial(1,'setStallF()', 12)
   setStallF()
-  -- Note("allow script")
+  Note("allow script")
   ResetTimer("whtime")
  sendWhere1()
- EnableAlias("where1", 0)
 end
 function setStallF()
   stall = false
 end
 function CurAreaminwin(name, line, wildcards)
   curArea = wildcards[1]
+  print (curArea)
 end
 function whereGrabber(name,line,wildcards)
     wild1 = string.lower(wildcards[1])
     if wild1 == "you"  or wild1=="your"  or wild1=="the" then return end
     if #wildcards[2] > 30 then return end
+    print (wildcards[0])
     whereTable[count] = {wildcards[1], wildcards[2]}
     DoAfterSpecial(.1 ,'stopGrabbing()', 12)
     count = count +1
 end
 function stopGrabbing(name,line,wildcards)
+  Note("stopGrabbing")
     EnableTrigger("DoSomething", 0)
     EnableTrigger("KillSomething", 0)
     EnableTrigger("whereStarter", 0)
@@ -208,6 +211,7 @@ function startTheScript()
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
   EnableTriggerGroup("gag_where", 1)
+  EnableAlias("where1", 0)
 end
 function do_Execute_no_echo(command)
   local original_echo_setting = GetOption("display_my_input")
@@ -308,9 +312,9 @@ function OnPluginBroadcast (msg, id, name, text)
         if lastZone == nil then lastZone= curZone end
         if lastZone ~= curZone and not stall then
           lastZone = curZone
-          -- Note("OPB room.info")
+          Note("OPB room.info")
           sendWhere1()
-          EnableAlias("where1", 0)
+          
         end
 
     end
