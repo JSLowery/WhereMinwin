@@ -57,7 +57,7 @@
   >
   </trigger>
   <trigger
-   match="(?P<mob>[a-zA-Z]{3,12})\s{19,29}(?P<room>.+)"
+   match="^(?P<mob>[a-zA-Z]{3,12})\s{19,29}(?P<room>.+)$"
    
    name="DoSomething"
    regexp="y"
@@ -193,7 +193,7 @@ function whereGrabber(name,line,wildcards)
     count = count +1
 end
 function stopGrabbing(name,line,wildcards)
-  Note("stopGrabbing")
+  DebugNote("stopGrabbing")
     
     show_whwin()
     killScript()
@@ -208,7 +208,7 @@ function DebugNote( msg )
   
 end
 function killScript()
-EnableTrigger("DoSomething", 0)
+    EnableTrigger("DoSomething", 0)
     EnableTrigger("KillSomething", 0)
     EnableTrigger("whereStarter", 0)
     EnableTrigger("CurAreaminwin", 0)
@@ -274,7 +274,7 @@ function show_whwin ()
   style.text = string.format("Area: %s", curArea)
   table.insert (header, {style})
 
-DebugNote(whereTable)
+  --DebugNote(whereTable)
   for i, v in ipairs (whereTable) do
     style = {}
 
