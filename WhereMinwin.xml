@@ -148,7 +148,7 @@ whereTable = {}
 count = 1
 local curArea= ""
 local stall = false
-local Debug = false
+local Debug =false
 function sendWhere1()
   local iStatus
   local almatch
@@ -238,13 +238,13 @@ function do_Execute_no_echo(command)
 end
 dofile (GetPluginInfo (GetPluginID (), 20) .. "luapath.lua")
 
-require 'var'
-require "commas"
+-- require 'var'
+-- require "commas"
 require 'miniwin'
 require 'pluginhelper'
-require 'ldplugin'
-require 'aardutils'
-require 'verify'
+-- require 'ldplugin'
+-- require 'aardutils'
+-- require 'verify'
 
 whwin = Miniwin:new{name="Where Saver"}
 whwin:set_default('windowpos', 7)
