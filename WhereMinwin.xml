@@ -29,6 +29,16 @@
 
 <triggers>
 <trigger
+ match="^There are too many doors and fences to see who is in this area.$"
+   regexp="y"
+   send_to="12"
+   sequence="1"
+   group="gag_where"
+    omit_from_output="y"
+   script="killScript"
+  >
+  </trigger>
+<trigger
    match="^Area created by : (.*)$"
    regexp="y"
    send_to="12"
@@ -271,6 +281,9 @@ function show_whwin ()
   local style = {}
 
   style = {}
+  if curArea == nil then 
+    print ("cur area == nil")
+  end
   style.text = string.format("Area: %s", curArea)
   table.insert (header, {style})
 
@@ -279,7 +292,7 @@ function show_whwin ()
     style = {}
 
       style.text = string.format("%-12s   %s", v[1],   v[2])
- 
+    
       style.textcolour = "time_colour"
     if v[2] == "???" then
       style.textcolour = "mobdead_colour"
