@@ -234,7 +234,7 @@ function startTheScript()
   whereTable = {}
   count = 1
   stall = true
-  do_Execute_no_echo('where')
+  SendNoEcho('where')
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
   EnableTriggerGroup("gag_where", 1)
@@ -326,7 +326,7 @@ function OnPluginBroadcast (msg, id, name, text)
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
         runningFlag = tonumber(gmcpdata.state)
-        if runningFlag ~= 3 then 
+        if runningFlag ~= 3 and runningFlag ~=8 then 
           stall = true 
         else
           stall = false
