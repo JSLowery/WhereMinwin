@@ -82,7 +82,7 @@
    name="KillSomething"
    regexp="y"
    send_to="12"
-   sequence="1"
+   sequence="2"
    omit_from_output="y"
    script="stopGrabbing"
   >
@@ -199,14 +199,18 @@ function whereGrabber(name,line,wildcards)
     --if #wildcards[2] > 40 then killScript() return end
     DebugNote (wildcards[0])
     whereTable[count] = {wildcards[1], wildcards[2]}
-    DoAfterSpecial(.1 ,'stopGrabbing()', 12)
+    
     count = count +1
+    EnableTrigger("KillSomething", 1)-- testing on
 end
 function stopGrabbing(name,line,wildcards)
+  DebugNote(wildcards[0].. " stopGrabbing part")
   DebugNote("stopGrabbing")
-    
-    show_whwin()
+    DebugNote(whereTable)
     killScript()
+    if whereTable == nil then return end
+    show_whwin()
+    
 end
 function DebugNote( msg )
   if not Debug then return end
@@ -234,11 +238,14 @@ function startTheScript()
   whereTable = {}
   count = 1
   stall = true
+  DebugNote(os.date("%c"))
   SendNoEcho('where')
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
+  
   EnableTriggerGroup("gag_where", 1)
   EnableAlias("where1", 0)
+  -- DoAfterSpecial(.2 ,'stopGrabbing()', 12)  ---testing off
 end
 function do_Execute_no_echo(command)
   local original_echo_setting = GetOption("display_my_input")
@@ -257,7 +264,7 @@ require 'pluginhelper'
 -- require 'verify'
 
 whwin = Miniwin:new{name="Where Saver"}
-whwin:set_default('windowpos', 7)
+whwin:set_default('windowpos', 1) -- if it breaks this used to be 7
 whwin:add_setting("time_colour", {help="the colour for the time", type="colour", default=verify_colour(0xD670DA), sortlev=1})
 whwin:add_setting("mobdead_colour", {help="the colour for when a mob is dead", type="colour", default=verify_colour("red"), sortlev=1})
 whwin:add_setting("mobnotfound", {help="the colour for when a mob is not in kill table db", type="colour", default=verify_colour("green"), sortlev=1})
