@@ -137,7 +137,7 @@
 <!--  Timers  -->
 
 <timers>
-  <timer name="whtime" enabled="y" minute="0" second="15.00" offset_second="0.00"    send_to="12"
+  <timer name="whtime" enabled="n" minute="0" second="15.00" offset_second="0.00"    send_to="12"
 >
   <send>
   sendWhere1()
@@ -182,7 +182,7 @@ function allowScript()
   setStallF()
   DebugNote("allow script")
   ResetTimer("whtime")
- sendWhere1()
+ DoAfterSpecial(1,"sendWhere1()",12)
 end
 function setStallF()
   stall = false
@@ -233,7 +233,8 @@ end
 function whereStarter()
   EnableTrigger("DoSomething", 1)
 end
-function startTheScript()
+function startTheScript(name, line, wildcards)
+  DebugNote(name)
   if stall then DebugNote("reurtning becuase stall was true") return end
   whereTable = {}
   count = 1
@@ -242,9 +243,10 @@ function startTheScript()
   SendNoEcho('where')
   EnableTrigger("whereStarter", 1)
   EnableTrigger("CurAreaminwin", 1)
-  
+  EnableTimer("whtime", 1)
   EnableTriggerGroup("gag_where", 1)
   EnableAlias("where1", 0)
+
   -- DoAfterSpecial(.2 ,'stopGrabbing()', 12)  ---testing off
 end
 function do_Execute_no_echo(command)
@@ -326,6 +328,7 @@ end
 local runningFlag= 3
 local curZone
 local lastZone
+
 function OnPluginBroadcast (msg, id, name, text)
   
     if (text== "char.status") then
@@ -333,8 +336,14 @@ function OnPluginBroadcast (msg, id, name, text)
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
         runningFlag = tonumber(gmcpdata.state)
+        -- print("Changing the flag to: ".. runningFlag)
+
         if runningFlag ~= 3 and runningFlag ~=8 then 
           stall = true 
+           fileName = 'WhereCheck'
+         file = io.open(fileName, "w+")
+         file:write(runningFlag)
+         file:close()
         else
           stall = false
         end
@@ -345,15 +354,19 @@ function OnPluginBroadcast (msg, id, name, text)
         luastmt = "gmcpdata = " .. gmcparg
         assert (loadstring (luastmt or "")) ()
         curZone = gmcpdata.zone
+        DebugNote(lastZone)
+        DebugNote(curZone)
         if runningFlag ~= 3 or stall then return end
-        if lastZone == nil then lastZone= curZone end
+        if lastZone == nil then lastZone= -1 end
         if lastZone ~= curZone and not stall then
           lastZone = curZone
           DebugNote("OPB room.info")
+          DebugNote('area update')
           sendWhere1()
           
         end
-
+        DebugNote(lastZone)
+        DebugNote(curZone)
     end
 end
 
