@@ -140,6 +140,7 @@
   <timer name="whtime" enabled="n" minute="0" second="15.00" offset_second="0.00"    send_to="12"
 >
   <send>
+
   sendWhere1()
    DebugNote("timer ")
    </send>
@@ -171,11 +172,14 @@ function sendWhere1()
   DebugNote(alflags)
     if alflags ~=0 then 
       do_Execute_no_echo('where1')
-      
+      do_Execute_no_echo ("echo @W--> @YPre-Tick @W<--")
+    else
+      EnableAlias("where1", 1)
     end
   end
 function stallScript()
     stall = true
+    DebugNote("Stall is : ".. tostring(stall))
 end
 function allowScript()
   --DoAfterSpecial(1,'setStallF()', 12)
@@ -186,6 +190,7 @@ function allowScript()
 end
 function setStallF()
   stall = false
+  DebugNote("Stall is : ".. tostring(stall))
 end
 function CurAreaminwin(name, line, wildcards)
   curArea = wildcards[1]
@@ -193,18 +198,18 @@ function CurAreaminwin(name, line, wildcards)
 end
 function whereGrabber(name,line,wildcards)
     wild1 = string.lower(wildcards[1])
-    DebugNote (wild1)
-    DebugNote(wildcards[2].." ".. #wildcards[2])
+   -- DebugNote (wild1)
+---DebugNote(wildcards[2].." ".. #wildcards[2])
     if wild1 == "you"  or wild1=="your"  or wild1=="the" or wild1 == "name" then killScript() return end
     --if #wildcards[2] > 40 then killScript() return end
-    DebugNote (wildcards[0])
+   -- DebugNote (wildcards[0])
     whereTable[count] = {wildcards[1], wildcards[2]}
     
     count = count +1
     EnableTrigger("KillSomething", 1)-- testing on
 end
 function stopGrabbing(name,line,wildcards)
-  DebugNote(wildcards[0].. " stopGrabbing part")
+ -- DebugNote(wildcards[0].. " stopGrabbing part")
   DebugNote("stopGrabbing")
     DebugNote(whereTable)
     killScript()
@@ -227,7 +232,7 @@ function killScript()
     EnableTrigger("whereStarter", 0)
     EnableTrigger("CurAreaminwin", 0)
     EnableTriggerGroup("gag_where", 0)
-    stall = false
+    setStallF()
     EnableAlias("where1", 1)
 end
 function whereStarter()
@@ -238,7 +243,7 @@ function startTheScript(name, line, wildcards)
   if stall then DebugNote("reurtning becuase stall was true") return end
   whereTable = {}
   count = 1
-  stall = true
+  stallScript()
   DebugNote(os.date("%c"))
   SendNoEcho('where')
   EnableTrigger("whereStarter", 1)
@@ -339,13 +344,15 @@ function OnPluginBroadcast (msg, id, name, text)
         -- print("Changing the flag to: ".. runningFlag)
 
         if runningFlag ~= 3 and runningFlag ~=8 then 
-          stall = true 
+          stallScript()
+          
            fileName = 'WhereCheck'
          file = io.open(fileName, "w+")
          file:write(runningFlag)
          file:close()
         else
-          stall = false
+          setStallF()
+         
         end
     end
 
