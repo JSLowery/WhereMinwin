@@ -28,6 +28,49 @@
 <!--  Triggers  -->
 
 <triggers>
+  <trigger
+   custom_colour="1"
+   enabled="n"
+   group="swho"
+   match="^                       Who list sorted by \: Total Stats                     $"
+   regexp="y"
+   omit_from_output="y"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   custom_colour="1"
+   enabled="n"
+   group="swho"
+   match="^\[(.*?)\] \[(.*?)\] (.*?)$"
+   regexp="y"
+   omit_from_output="y"
+   script="swhoGrab"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   custom_colour="1"
+   enabled="n"
+   group="swho"
+   match="^Players found\: \[(.*?)\]\, Max this reboot\: \[(.*?)\]\, Connections this reboot\: \[(.*?)\]$"
+   regexp="y"
+   omit_from_output="y"
+   sequence="100"
+  >
+  </trigger>
+  <trigger
+   custom_colour="1"
+   enabled="n"
+   group="swho"
+   match="^Players invis\: \[(.*?)\]\, Max on ever\: \[(.*?)\]$"
+   regexp="y"
+   omit_from_output="y"
+   script="killswho"
+   sequence="100"
+  >
+  </trigger>
+
 <trigger
  match="^There are too many doors and fences to see who is in this area.$"
    regexp="y"
@@ -160,6 +203,19 @@ count = 1
 local curArea= ""
 local stall = false
 local Debug =false
+
+function killswho()
+  EnableTriggerGroup("swho",false)
+  DoAfterSpecial(1,"show_whwin()",12)
+  
+end
+
+swhoTable = {}
+function swhoGrab(name,line,wildcards)
+table.insert(swhoTable, wildcards[0])
+end
+
+
 function sendWhere1()
   local iStatus
   local almatch
@@ -172,7 +228,7 @@ function sendWhere1()
   DebugNote(alflags)
     if alflags ~=0 then 
       do_Execute_no_echo('where1')
-      do_Execute_no_echo ("echo @W--> @YPre-Tick @W<--")
+      -- print("--> Pre-Tick <--")
     else
       EnableAlias("where1", 1)
     end
@@ -213,8 +269,10 @@ function stopGrabbing(name,line,wildcards)
   DebugNote("stopGrabbing")
     DebugNote(whereTable)
     killScript()
+    EnableTriggerGroup('swho',1)
+    do_Execute_no_echo('swho 12 area')
     if whereTable == nil then return end
-    show_whwin()
+    
     
 end
 function DebugNote( msg )
@@ -242,6 +300,7 @@ function startTheScript(name, line, wildcards)
   DebugNote(name)
   if stall then DebugNote("reurtning becuase stall was true") return end
   whereTable = {}
+  swhoTable = {}
   count = 1
   stallScript()
   DebugNote(os.date("%c"))
@@ -289,11 +348,11 @@ function set_show()
 end
 
 function show_whwin ()
-
+  if #whereTable == 0 or #swhoTable == 0 then return end 
   local texttable = {}
   local header = {}
   local style = {}
-
+  local tmptbl = {}
   style = {}
   if curArea == nil then 
     print ("cur area == nil")
@@ -302,20 +361,54 @@ function show_whwin ()
   table.insert (header, {style})
 
   --DebugNote(whereTable)
+
   for i, v in ipairs (whereTable) do
+    DebugNote ('whereTable iteration '..i.." value: ".. v[1])
     style = {}
 
-      style.text = string.format("%-12s   %s", v[1],   v[2])
+    --style.text = string.format("%-12s   %s", q,   v[2])
+      
     
       style.textcolour = "time_colour"
     if v[2] == "???" then
       style.textcolour = "mobdead_colour"
     end
-    table.insert (texttable, {style})
+   -- table.insert (texttable, {style})
+    
+    for p,q in ipairs(swhoTable) do
+      DebugNote ('swhoTable iteration '..p.." value: ".. q)
+      if v[1] ~= nil then
+        if string.find(q, v[1]) then
+          --style = {}
+          style.text = string.format("%-12s   %s", q,   v[2])
+            bool, ind =has_value(swhoTable, q)
+          if bool then table.remove(swhoTable,ind) end -- This is teh remove for the tmptbly
+          if string.find(q, "(OPK)") then
+            style.textcolour = "mobdead_colour"
 
+          else
+            style.textcolour = "mobnotfound"
+
+          end --if else
+          table.insert(texttable, {style})
+        end-- if
+      end-- if
+    end --for
   end -- for
+  for i, p in ipairs(swhoTable) do
+    style = {}
+    style.text = p
+    if string.find(p, "(OPK)") then
+            style.textcolour = "mobdead_colour"
 
- 
+    else
+      style.textcolour = "mobnotfound"
+
+    end
+    table.insert(texttable, {style})
+  end
+
+ --tprint(texttable)
 
   whwin:enable()
   whwin:addtab('default', texttable, header, true)
@@ -330,6 +423,16 @@ function show_whwin ()
   whwin:tabbroadcast(true, {style})
 
 end 
+ function has_value (tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true, index
+        end
+    end
+
+    return false
+end
+
 local runningFlag= 3
 local curZone
 local lastZone
@@ -347,9 +450,9 @@ function OnPluginBroadcast (msg, id, name, text)
           stallScript()
           
            fileName = 'WhereCheck'
-         file = io.open(fileName, "w+")
-         file:write(runningFlag)
-         file:close()
+         -- file = io.open(fileName, "w+")
+         -- file:write(runningFlag)
+         -- file:close()
         else
           setStallF()
          
