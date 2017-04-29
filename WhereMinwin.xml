@@ -212,7 +212,12 @@ end
 
 swhoTable = {}
 function swhoGrab(name,line,wildcards)
-table.insert(swhoTable, wildcards[0])
+  -- print (wildcards[3])
+  str = string.gsub(wildcards[3], "[%%%]%^%-$().<>*:[*+?]",  "")
+  -- print (str)
+  str = "["..wildcards[1].."] ["..wildcards[2].."] ".. str
+  -- print (str)
+  table.insert(swhoTable, wildcards[0])
 end
 
 
@@ -336,7 +341,9 @@ whwin:add_setting("mobdead_colour", {help="the colour for when a mob is dead", t
 whwin:add_setting("mobnotfound", {help="the colour for when a mob is not in kill table db", type="colour", default=verify_colour("green"), sortlev=1})
 whwin:add_setting("notlevel_colour", {help="the colour for when this cp is no longer from this level", type="colour", default=verify_colour("cyan"), sortlev=1})
 --whwin:disable()
-
+--fid=whwin:addfont("Dina",8)
+--print (fid)
+--whwin:setdefaultfont()
 cpmobs = {}
 cptimer = {}
 level = nil
@@ -348,6 +355,8 @@ function set_show()
 end
 
 function show_whwin ()
+  background_colour = 0xE7FFFF
+  win = GetPluginID ()
   if #whereTable == 0 or #swhoTable == 0 then return end 
   local texttable = {}
   local header = {}
@@ -357,7 +366,21 @@ function show_whwin ()
   if curArea == nil then 
     print ("cur area == nil")
   end
+  font_id = "fn"
+  
+  font_name = "Dina"    -- the actual font
+  
+  -- make window so I can grab the font info
+  check (WindowCreate (win, 
+                 0, 0, 1, 1,  
+                 1,   -- irrelevant
+                 0, 
+                 background_colour) )
+
+  check (WindowFont (win, font_id, font_name, 8, false, false, false, false, 0, 0))  -- normal  
+  font_height = WindowFontInfo (win, font_id, 1)  -- height
   style.text = string.format("Area: %s", curArea)
+  style.font_name = font_name
   table.insert (header, {style})
 
   --DebugNote(whereTable)
@@ -390,6 +413,8 @@ function show_whwin ()
             style.textcolour = "mobnotfound"
 
           end --if else
+          style.font_name = font_name
+
           table.insert(texttable, {style})
         end-- if
       end-- if
